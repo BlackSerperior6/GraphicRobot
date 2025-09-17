@@ -12,6 +12,7 @@
         private System.Windows.Forms.Label lblJoint3;
         private System.Windows.Forms.Button btnMoveLeft;
         private System.Windows.Forms.Button btnMoveRight;
+        //private System.Windows.Forms.Button btnGripperToggle;
         private System.Windows.Forms.Button btnReset;
 
         protected override void Dispose(bool disposing)
@@ -35,6 +36,7 @@
             btnMoveLeft = new Button();
             btnMoveRight = new Button();
             btnReset = new Button();
+            btnGripperToggle = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarJoint1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarJoint2).BeginInit();
@@ -130,7 +132,7 @@
             // 
             // btnReset
             // 
-            btnReset.Location = new Point(490, 234);
+            btnReset.Location = new Point(494, 234);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(90, 30);
             btnReset.TabIndex = 12;
@@ -138,9 +140,20 @@
             btnReset.UseVisualStyleBackColor = true;
             btnReset.Click += btnReset_Click;
             // 
+            // btnGripperToggle
+            // 
+            btnGripperToggle.Location = new Point(494, 270);
+            btnGripperToggle.Name = "btnGripperToggle";
+            btnGripperToggle.Size = new Size(100, 26);
+            btnGripperToggle.TabIndex = 13;
+            btnGripperToggle.Text = "Close Gripper";
+            btnGripperToggle.UseVisualStyleBackColor = true;
+            btnGripperToggle.Click += btnGripperToggle_Click;
+            // 
             // RobotControllerForm
             // 
-            ClientSize = new Size(625, 319);
+            ClientSize = new Size(853, 337);
+            Controls.Add(btnGripperToggle);
             Controls.Add(btnReset);
             Controls.Add(btnMoveRight);
             Controls.Add(btnMoveLeft);
@@ -161,5 +174,6 @@
             ResumeLayout(false);
             PerformLayout();
         }
+        private Button btnGripperToggle;
     }
 }

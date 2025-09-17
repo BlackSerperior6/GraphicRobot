@@ -55,6 +55,7 @@
 
             // Draw gripper
             PointF gripperPos = CalculateJointPosition(joint3Pos, robot.ClawJoint3, 20);
+            DrawGripper(graphics, gripperPos, robot.GripperOpen);
 
             pictureBox.Refresh();
         }
@@ -116,6 +117,21 @@
             lblJoint3.Text = $"Joint 3: {robot.ClawJoint3}°";
         }
 
+        private void DrawGripper(Graphics g, PointF position, bool isOpen)
+        {
+            float gripperWidth = isOpen ? 20 : 5;
+
+            // Draw left gripper
+            PointF leftStart = new PointF(position.X - 5, position.Y);
+            PointF leftEnd = new PointF(position.X - gripperWidth, position.Y + 15);
+            g.DrawLine(new Pen(Brushes.DarkGray, 4), leftStart, leftEnd);
+
+            // Draw right gripper
+            PointF rightStart = new PointF(position.X + 5, position.Y);
+            PointF rightEnd = new PointF(position.X + gripperWidth, position.Y + 15);
+            g.DrawLine(new Pen(Brushes.DarkGray, 4), rightStart, rightEnd);
+        }
+
         private void btnMoveLeft_Click(object sender, EventArgs e)
         {
             float newX = robot.Position.X - leftOffset;
@@ -135,6 +151,13 @@
                 return;
 
             robot.Position = new PointF(newX, robot.Position.Y);
+            DrawRobot();
+        }
+
+        private void btnGripperToggle_Click(object sender, EventArgs e)
+        {
+            robot.GripperOpen = !robot.GripperOpen;
+            btnGripperToggle.Text = robot.GripperOpen ? "Close Gripper" : "Open Gripper";
             DrawRobot();
         }
 
