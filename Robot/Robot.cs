@@ -31,102 +31,65 @@
             StartPosition = Position;
         }
 
-        public float[,] GetEndEffectorTransformationMatrixGraphicsConvention()
+        public float[,] GetEndEffectorTransformationMatrix()
         {
-            return MultiplyMatricesGraphics(
-                GetJoint3TransformationMatrixGraphics(),
-                MultiplyMatricesGraphics(
-                    GetJoint2TransformationMatrixGraphics(),
-                    MultiplyMatricesGraphics(
-                        GetJoint1TransformationMatrixGraphics(),
-                        GetBaseTransformationMatrixGraphics()
-                    )
-                )
-            );
+            // Calculate the cumulative transformation from base to end effector
+            // This includes base translation and all joint rotations
+
+            // Start with identity matrix
+            float[,] transform = IdentityMatrix();
+
+            // Apply base translation (robot movement)
+            transform = MultiplyMatrices(transform, TranslationMatrix(Position.X - StartPosition.X, Position.Y - StartPosition.Y));
+
+            // Apply joint rotations and translations in sequence
+            transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint1));
+            transform = MultiplyMatrices(transform, TranslationMatrix(Segment1Length, 0));
+
+            transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint2));
+            transform = MultiplyMatrices(transform, TranslationMatrix(Segment2Length, 0));
+
+            transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint3));
+            transform = MultiplyMatrices(transform, TranslationMatrix(Segment3Length, 0));
+
+            return transform;
         }
 
-        private float[,] GetBaseTransformationMatrixGraphics()
+        private float[,] IdentityMatrix()
         {
-            float tx = Position.X - StartPosition.X;
-            float ty = Position.Y - StartPosition.Y;
-
             return new float[,]
             {
                 { 1f, 0f, 0f },
                 { 0f, 1f, 0f },
-                { tx, ty, 1f }
+                { 0f, 0f, 1f }
             };
         }
 
-        private float[,] GetJoint1TransformationMatrixGraphics()
+        private float[,] TranslationMatrix(float tx, float ty)
         {
-            float angleRad = ClawJoint1 * (float)Math.PI / 180f;
+            return new float[,]
+            {
+                { 1f, 0f, tx },
+                { 0f, 1f, ty },
+                { 0f, 0f, 1f }
+            };
+        }
+
+        private float[,] RotationMatrix(float angleDegrees)
+        {
+            float angleRad = angleDegrees * (float)Math.PI / 180f;
             float cos = (float)Math.Cos(angleRad);
             float sin = (float)Math.Sin(angleRad);
 
             return new float[,]
             {
-                { cos, sin, 0f },
-                { -sin, cos, 0f },
-                { 0f,   0f, 1f }
+                { cos, -sin, 0f },
+                { sin,  cos, 0f },
+                { 0f,   0f,  1f }
             };
         }
 
-        private float[,] GetJoint2TransformationMatrixGraphics()
-        {
-            float angleRad = ClawJoint2 * (float)Math.PI / 180f;
-            float cos = (float)Math.Cos(angleRad);
-            float sin = (float)Math.Sin(angleRad);
-
-            return new float[,]
-            {
-                { cos, sin, 0f },
-                { -sin, cos, 0f },
-                { Segment1Length, 0f, 1f }
-            };
-        }
-
-        private float[,] GetJoint3TransformationMatrixGraphics()
-        {
-            float angleRad = ClawJoint3 * (float)Math.PI / 180f;
-            float cos = (float)Math.Cos(angleRad);
-            float sin = (float)Math.Sin(angleRad);
-
-            return new float[,]
-            {
-                { cos, sin, 0f },
-                { -sin, cos, 0f },
-                { Segment2Length, 0f, 1f }
-            };
-        }
-
-        // Matrix multiplication for standard convention
         private float[,] MultiplyMatrices(float[,] a, float[,] b)
-        {
-            int rowsA = a.GetLength(0);
-            int colsA = a.GetLength(1);
-            int colsB = b.GetLength(1);
-
-            float[,] result = new float[rowsA, colsB];
-
-            for (int i = 0; i < rowsA; i++)
-            {
-                for (int j = 0; j < colsB; j++)
-                {
-                    float sum = 0f;
-                    for (int k = 0; k < colsA; k++)
-                    {
-                        sum += a[i, k] * b[k, j];
-                    }
-                    result[i, j] = sum;
-                }
-            }
-
-            return result;
-        }
-
-        // Matrix multiplication for graphics convention (reverse order)
-        private float[,] MultiplyMatricesGraphics(float[,] a, float[,] b)
         {
             int rowsA = a.GetLength(0);
             int colsA = a.GetLength(1);
@@ -152,37 +115,43 @@
 
         public PointF CalculateEndEffectorPosition()
         {
-            float[,] gripperTransform = MultiplyMatrices(transform, GetGripperTransformationMatrix());
+            float[,] transform = GetEndEffectorTransformationMatrix();
 
-            return new PointF(gripperTransform[0, 2], gripperTransform[1, 2]);
+            // The position is in the translation components (first two elements of third column)
+            return new PointF(transform[0, 2], transform[1, 2]);
         }
 
-        public string GetTransformationMatrixInfo()
+        public string GetForwardKinematicsInfo()
         {
             PointF endEffectorPos = CalculateEndEffectorPosition();
-            float[,] matrixGraphics = GetEndEffectorTransformationMatrixGraphicsConvention();
+            float[,] matrix = GetEndEffectorTransformationMatrix();
 
             return string.Format(
                 "End Effector Position:\nX: {0:F1}, Y: {1:F1}\n\n" +
-                "Graphics Convention:\n" +
-                "[ {11,7:F2} {12,7:F2} {13,7:F2} ]\n" +
-                "[ {14,7:F2} {15,7:F2} {16,7:F2} ]\n" +
-                "[ {17,7:F2} {18,7:F2} {19,7:F2} ]",
+                "Transformation Matrix:\n" +
+                "[ {2,7:F2} {3,7:F2} {4,7:F2} ]\n" +
+                "[ {5,7:F2} {6,7:F2} {7,7:F2} ]\n" +
+                "[ {8,7:F2} {9,7:F2} {10,7:F2} ]",
                 endEffectorPos.X, endEffectorPos.Y,
-                matrixGraphics[0, 0], matrixGraphics[0, 1], matrixGraphics[0, 2],
-                matrixGraphics[1, 0], matrixGraphics[1, 1], matrixGraphics[1, 2],
-                matrixGraphics[2, 0], matrixGraphics[2, 1], matrixGraphics[2, 2]
+                matrix[0, 0], matrix[0, 1], matrix[0, 2],
+                matrix[1, 0], matrix[1, 1], matrix[1, 2],
+                matrix[2, 0], matrix[2, 1], matrix[2, 2]
             );
         }
 
-        private float[,] GetGripperTransformationMatrix()
+        // Helper method to get just the transformation matrix string
+        public string GetTransformationMatrixString()
         {
-            return new float[,]
-            {
-                { 1f, 0f, Segment3Length },
-                { 0f, 1f, 0f },
-                { 0f, 0f, 1f }
-            };
+            float[,] matrix = GetEndEffectorTransformationMatrix();
+
+            return string.Format(
+                "[ {0,7:F2} {1,7:F2} {2,7:F2} ]\n" +
+                "[ {3,7:F2} {4,7:F2} {5,7:F2} ]\n" +
+                "[ {6,7:F2} {7,7:F2} {8,7:F2} ]",
+                matrix[0, 0], matrix[0, 1], matrix[0, 2],
+                matrix[1, 0], matrix[1, 1], matrix[1, 2],
+                matrix[2, 0], matrix[2, 1], matrix[2, 2]
+            );
         }
     }
 }

@@ -58,6 +58,8 @@
             DrawGripper(graphics, gripperPos, robot.GripperOpen);
 
             pictureBox.Refresh();
+
+            UpdateTransformationMatrixDisplay();
         }
 
         private void DrawClawSegment(Graphics g, PointF start, float angle, float length, Brush brush)
@@ -172,6 +174,11 @@
         {
             UpdateJointTrackBars();
             DrawRobot();
+        }
+
+        private void UpdateTransformationMatrixDisplay()
+        {
+            lblTransformationMatrix.Text = robot.GetForwardKinematicsInfo();
         }
     }
 }

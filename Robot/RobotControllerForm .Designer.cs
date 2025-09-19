@@ -12,8 +12,9 @@
         private System.Windows.Forms.Label lblJoint3;
         private System.Windows.Forms.Button btnMoveLeft;
         private System.Windows.Forms.Button btnMoveRight;
-        //private System.Windows.Forms.Button btnGripperToggle;
+        private System.Windows.Forms.Button btnGripperToggle;
         private System.Windows.Forms.Button btnReset;
+        private System.Windows.Forms.Label lblTransformationMatrix;
 
         protected override void Dispose(bool disposing)
         {
@@ -37,6 +38,7 @@
             btnMoveRight = new Button();
             btnReset = new Button();
             btnGripperToggle = new Button();
+            lblTransformationMatrix = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarJoint1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarJoint2).BeginInit();
@@ -150,9 +152,19 @@
             btnGripperToggle.UseVisualStyleBackColor = true;
             btnGripperToggle.Click += btnGripperToggle_Click;
             // 
+            // lblTransformationMatrix
+            // 
+            lblTransformationMatrix.AutoSize = true;
+            lblTransformationMatrix.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTransformationMatrix.Location = new Point(12, 315);
+            lblTransformationMatrix.Name = "lblTransformationMatrix";
+            lblTransformationMatrix.Size = new Size(168, 98);
+            lblTransformationMatrix.TabIndex = 13;
+            lblTransformationMatrix.Text = "End Effector Position:\nX: 0.0, Y: 0.0\n\nTransformation Matrix:\n[  1.00   0.00   0.00 ]\n[  0.00   1.00   0.00 ]\n[  0.00   0.00   1.00 ]";
+            // 
             // RobotControllerForm
             // 
-            ClientSize = new Size(853, 337);
+            ClientSize = new Size(616, 426);
             Controls.Add(btnGripperToggle);
             Controls.Add(btnReset);
             Controls.Add(btnMoveRight);
@@ -164,6 +176,7 @@
             Controls.Add(trackBarJoint2);
             Controls.Add(trackBarJoint1);
             Controls.Add(pictureBox);
+            Controls.Add(lblTransformationMatrix);
             Name = "RobotControllerForm";
             Text = "Robot Controller";
             Load += RobotControllerForm_Load;
@@ -174,6 +187,5 @@
             ResumeLayout(false);
             PerformLayout();
         }
-        private Button btnGripperToggle;
     }
 }
