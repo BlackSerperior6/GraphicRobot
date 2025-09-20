@@ -20,6 +20,7 @@
 
         public Robot() => Reset();
 
+        //Сброс робота до стартовой позиции
         public void Reset()
         {
             ClawJoint1 = 0f;
@@ -31,50 +32,36 @@
             StartPosition = Position;
         }
 
-        public float[,] GetEndEffectorTransformationMatrix()
+        // Расчет комплексной матрицы клешни относительно робота
+        public float[,] CalculateGrippersTransformationMatrix()
         {
-            // Calculate the cumulative transformation from base to end effector
-            // This includes base translation and all joint rotations
+            float[,] transform = TranslationMatrix(Position.X - StartPosition.X,
+                Position.Y - StartPosition.Y);
 
-            // Start with identity matrix
-            float[,] transform = IdentityMatrix();
-
-            // Apply base translation (robot movement)
-            transform = MultiplyMatrices(transform, TranslationMatrix(Position.X - StartPosition.X, Position.Y - StartPosition.Y));
-
-            // Apply joint rotations and translations in sequence
             transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint1));
-            transform = MultiplyMatrices(transform, TranslationMatrix(Segment1Length, 0));
+            transform = MultiplyMatrices(transform, TranslationMatrix(0, -Segment1Length));
 
             transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint2));
-            transform = MultiplyMatrices(transform, TranslationMatrix(Segment2Length, 0));
+            transform = MultiplyMatrices(transform, TranslationMatrix(0, -Segment2Length));
 
             transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint3));
-            transform = MultiplyMatrices(transform, TranslationMatrix(Segment3Length, 0));
+            transform = MultiplyMatrices(transform, TranslationMatrix(0, -Segment3Length));
 
             return transform;
         }
 
-        private float[,] IdentityMatrix()
-        {
-            return new float[,]
-            {
-                { 1f, 0f, 0f },
-                { 0f, 1f, 0f },
-                { 0f, 0f, 1f }
-            };
-        }
-
+        //Метод для формирования матрицы перемещения
         private float[,] TranslationMatrix(float tx, float ty)
         {
             return new float[,]
             {
-                { 1f, 0f, tx },
-                { 0f, 1f, ty },
-                { 0f, 0f, 1f }
+                { 1f, 0f, 0 },
+                { 0f, 1f, 0 },
+                { tx, ty, 1f }
             };
         }
 
+        //Метод для формирования матрицы вращения
         private float[,] RotationMatrix(float angleDegrees)
         {
             float angleRad = angleDegrees * (float)Math.PI / 180f;
@@ -83,12 +70,13 @@
 
             return new float[,]
             {
-                { cos, -sin, 0f },
-                { sin,  cos, 0f },
+                { cos, sin, 0f },
+                { -sin, cos, 0f },
                 { 0f,   0f,  1f }
             };
         }
 
+        //Метод для умножения матриц
         private float[,] MultiplyMatrices(float[,] a, float[,] b)
         {
             int rowsA = a.GetLength(0);
@@ -102,10 +90,10 @@
                 for (int j = 0; j < colsB; j++)
                 {
                     float sum = 0f;
+
                     for (int k = 0; k < colsA; k++)
-                    {
                         sum += a[i, k] * b[k, j];
-                    }
+
                     result[i, j] = sum;
                 }
             }
@@ -113,36 +101,10 @@
             return result;
         }
 
-        public PointF CalculateEndEffectorPosition()
+        //Метод для перевода матрицы в текстовый формат
+        public string GetMatrixString()
         {
-            float[,] transform = GetEndEffectorTransformationMatrix();
-
-            // The position is in the translation components (first two elements of third column)
-            return new PointF(transform[0, 2], transform[1, 2]);
-        }
-
-        public string GetForwardKinematicsInfo()
-        {
-            PointF endEffectorPos = CalculateEndEffectorPosition();
-            float[,] matrix = GetEndEffectorTransformationMatrix();
-
-            return string.Format(
-                "End Effector Position:\nX: {0:F1}, Y: {1:F1}\n\n" +
-                "Transformation Matrix:\n" +
-                "[ {2,7:F2} {3,7:F2} {4,7:F2} ]\n" +
-                "[ {5,7:F2} {6,7:F2} {7,7:F2} ]\n" +
-                "[ {8,7:F2} {9,7:F2} {10,7:F2} ]",
-                endEffectorPos.X, endEffectorPos.Y,
-                matrix[0, 0], matrix[0, 1], matrix[0, 2],
-                matrix[1, 0], matrix[1, 1], matrix[1, 2],
-                matrix[2, 0], matrix[2, 1], matrix[2, 2]
-            );
-        }
-
-        // Helper method to get just the transformation matrix string
-        public string GetTransformationMatrixString()
-        {
-            float[,] matrix = GetEndEffectorTransformationMatrix();
+            float[,] matrix = CalculateGrippersTransformationMatrix();
 
             return string.Format(
                 "[ {0,7:F2} {1,7:F2} {2,7:F2} ]\n" +

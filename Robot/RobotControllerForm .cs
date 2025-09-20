@@ -178,7 +178,7 @@
 
         private void UpdateTransformationMatrixDisplay()
         {
-            lblTransformationMatrix.Text = robot.GetForwardKinematicsInfo();
+            lblTransformationMatrix.Text = robot.GetMatrixString();
         }
     }
 }

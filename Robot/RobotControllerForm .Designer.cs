@@ -158,13 +158,13 @@
             lblTransformationMatrix.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblTransformationMatrix.Location = new Point(12, 315);
             lblTransformationMatrix.Name = "lblTransformationMatrix";
-            lblTransformationMatrix.Size = new Size(168, 98);
+            lblTransformationMatrix.Size = new Size(168, 56);
             lblTransformationMatrix.TabIndex = 13;
-            lblTransformationMatrix.Text = "End Effector Position:\nX: 0.0, Y: 0.0\n\nTransformation Matrix:\n[  1.00   0.00   0.00 ]\n[  0.00   1.00   0.00 ]\n[  0.00   0.00   1.00 ]";
+            lblTransformationMatrix.Text = "Transformation Matrix:\n[  1.00   0.00   0.00 ]\n[  0.00   1.00   0.00 ]\n[  0.00   0.00   1.00 ]";
             // 
             // RobotControllerForm
             // 
-            ClientSize = new Size(616, 426);
+            ClientSize = new Size(616, 385);
             Controls.Add(btnGripperToggle);
             Controls.Add(btnReset);
             Controls.Add(btnMoveRight);
