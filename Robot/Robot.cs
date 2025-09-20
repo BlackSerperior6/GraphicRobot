@@ -12,8 +12,6 @@
         public float ClawJoint2 { get; set; }
         public float ClawJoint3 { get; set; }
 
-        public bool GripperOpen { get; set; }
-
         public const float Segment1Length = 30f;
         public const float Segment2Length = 25f;
         public const float Segment3Length = 20f;
@@ -26,7 +24,6 @@
             ClawJoint1 = 0f;
             ClawJoint2 = 0f;
             ClawJoint3 = 0f;
-            GripperOpen = true;
 
             Position = new PointF(staringX, startingY);
             StartPosition = Position;

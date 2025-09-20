@@ -12,7 +12,6 @@
         private System.Windows.Forms.Label lblJoint3;
         private System.Windows.Forms.Button btnMoveLeft;
         private System.Windows.Forms.Button btnMoveRight;
-        private System.Windows.Forms.Button btnGripperToggle;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Label lblTransformationMatrix;
 
@@ -37,7 +36,6 @@
             btnMoveLeft = new Button();
             btnMoveRight = new Button();
             btnReset = new Button();
-            btnGripperToggle = new Button();
             lblTransformationMatrix = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarJoint1).BeginInit();
@@ -142,16 +140,6 @@
             btnReset.UseVisualStyleBackColor = true;
             btnReset.Click += btnReset_Click;
             // 
-            // btnGripperToggle
-            // 
-            btnGripperToggle.Location = new Point(494, 270);
-            btnGripperToggle.Name = "btnGripperToggle";
-            btnGripperToggle.Size = new Size(100, 26);
-            btnGripperToggle.TabIndex = 13;
-            btnGripperToggle.Text = "Close Gripper";
-            btnGripperToggle.UseVisualStyleBackColor = true;
-            btnGripperToggle.Click += btnGripperToggle_Click;
-            // 
             // lblTransformationMatrix
             // 
             lblTransformationMatrix.AutoSize = true;
@@ -164,8 +152,7 @@
             // 
             // RobotControllerForm
             // 
-            ClientSize = new Size(616, 385);
-            Controls.Add(btnGripperToggle);
+            ClientSize = new Size(615, 384);
             Controls.Add(btnReset);
             Controls.Add(btnMoveRight);
             Controls.Add(btnMoveLeft);
@@ -177,6 +164,8 @@
             Controls.Add(trackBarJoint1);
             Controls.Add(pictureBox);
             Controls.Add(lblTransformationMatrix);
+            MaximumSize = new Size(631, 423);
+            MinimumSize = new Size(631, 423);
             Name = "RobotControllerForm";
             Text = "Robot Controller";
             Load += RobotControllerForm_Load;

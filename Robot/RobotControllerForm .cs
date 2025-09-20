@@ -33,18 +33,14 @@
         {
             graphics.Clear(Color.White);
 
-            // Draw wheels
             graphics.FillEllipse(Brushes.Black, robot.Position.X - 20, robot.Position.Y + 20, 40, 15);
             graphics.FillEllipse(Brushes.Black, robot.Position.X - 20, robot.Position.Y - 35, 40, 15);
 
-            // Draw robot body
             graphics.FillRectangle(Brushes.Gray, robot.Position.X - 30, robot.Position.Y - 30, 60, 60);
 
-            // Draw claw base
             PointF clawBase = new PointF(robot.Position.X, robot.Position.Y - 30);
             graphics.FillRectangle(Brushes.DarkGray, clawBase.X - 10, clawBase.Y - 10, 20, 10);
 
-            // Draw claw segments
             DrawClawSegment(graphics, clawBase, robot.ClawJoint1, 30, Brushes.SteelBlue);
 
             PointF joint2Pos = CalculateJointPosition(clawBase, robot.ClawJoint1, 30);
@@ -53,9 +49,8 @@
             PointF joint3Pos = CalculateJointPosition(joint2Pos, robot.ClawJoint2, 25);
             DrawClawSegment(graphics, joint3Pos, robot.ClawJoint3, 20, Brushes.Silver);
 
-            // Draw gripper
             PointF gripperPos = CalculateJointPosition(joint3Pos, robot.ClawJoint3, 20);
-            DrawGripper(graphics, gripperPos, robot.GripperOpen);
+            DrawGripper(graphics, gripperPos);
 
             pictureBox.Refresh();
 
@@ -119,9 +114,9 @@
             lblJoint3.Text = $"Joint 3: {robot.ClawJoint3}°";
         }
 
-        private void DrawGripper(Graphics g, PointF position, bool isOpen)
+        private void DrawGripper(Graphics g, PointF position)
         {
-            float gripperWidth = isOpen ? 20 : 5;
+            float gripperWidth = 20;
 
             // Draw left gripper
             PointF leftStart = new PointF(position.X - 5, position.Y);
@@ -153,13 +148,6 @@
                 return;
 
             robot.Position = new PointF(newX, robot.Position.Y);
-            DrawRobot();
-        }
-
-        private void btnGripperToggle_Click(object sender, EventArgs e)
-        {
-            robot.GripperOpen = !robot.GripperOpen;
-            btnGripperToggle.Text = robot.GripperOpen ? "Close Gripper" : "Open Gripper";
             DrawRobot();
         }
 
