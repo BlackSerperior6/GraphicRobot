@@ -33,41 +33,45 @@
         {
             graphics.Clear(Color.White);
 
+            // Calculate all arm positions using forward kinematics
+            RobotArmPositions positions = robot.CalculateArmPositions();
+
+            // Draw wheels
             graphics.FillEllipse(Brushes.Black, robot.Position.X - 20, robot.Position.Y + 20, 40, 15);
             graphics.FillEllipse(Brushes.Black, robot.Position.X - 20, robot.Position.Y - 35, 40, 15);
 
+            // Draw robot body
             graphics.FillRectangle(Brushes.Gray, robot.Position.X - 30, robot.Position.Y - 30, 60, 60);
 
-            PointF clawBase = new PointF(robot.Position.X, robot.Position.Y - 30);
-            graphics.FillRectangle(Brushes.DarkGray, clawBase.X - 10, clawBase.Y - 10, 20, 10);
+            // Draw claw base
+            graphics.FillRectangle(Brushes.DarkGray, positions.BasePosition.X - 10, positions.BasePosition.Y - 10, 20, 10);
 
-            DrawClawSegment(graphics, clawBase, robot.ClawJoint1, 30, Brushes.SteelBlue);
+            // Draw arm segments with proper forward kinematics
+            DrawArmSegment(graphics, positions.BasePosition, positions.Joint1Position, Brushes.SteelBlue, "J1");
+            DrawArmSegment(graphics, positions.Joint1Position, positions.Joint2Position, Brushes.LightSteelBlue, "J2");
+            DrawArmSegment(graphics, positions.Joint2Position, positions.Joint3Position, Brushes.Silver, "J3");
 
-            PointF joint2Pos = CalculateJointPosition(clawBase, robot.ClawJoint1, 30);
-            DrawClawSegment(graphics, joint2Pos, robot.ClawJoint2, 25, Brushes.LightSteelBlue);
-
-            PointF joint3Pos = CalculateJointPosition(joint2Pos, robot.ClawJoint2, 25);
-            DrawClawSegment(graphics, joint3Pos, robot.ClawJoint3, 20, Brushes.Silver);
-
-            PointF gripperPos = CalculateJointPosition(joint3Pos, robot.ClawJoint3, 20);
-            DrawGripper(graphics, gripperPos);
+            // Draw gripper at the end effector position
+            DrawGripper(graphics, positions.EndEffectorPosition);
 
             pictureBox.Refresh();
 
             UpdateTransformationMatrixDisplay();
         }
 
-        private void DrawClawSegment(Graphics g, PointF start, float angle, float length, Brush brush)
+        private void DrawArmSegment(Graphics g, PointF start, PointF end, Brush brush, string label)
         {
-            float endX = start.X + length * (float)Math.Sin(angle * Math.PI / 180);
-            float endY = start.Y - length * (float)Math.Cos(angle * Math.PI / 180);
-
-            PointF end = new PointF(endX, endY);
-
-            using (Pen pen = new(brush, 8))
+            // Draw segment line
+            using (Pen pen = new Pen(brush, 8))
+            {
                 g.DrawLine(pen, start, end);
+            }
 
+            // Draw joint circle at start
             g.FillEllipse(Brushes.Red, start.X - 5, start.Y - 5, 10, 10);
+
+            // Draw joint label
+            g.DrawString(label, SystemFonts.DefaultFont, Brushes.Black, start.X + 8, start.Y - 15);
         }
 
         private PointF CalculateJointPosition(PointF start, float angle, float length) => new(
@@ -166,7 +170,7 @@
 
         private void UpdateTransformationMatrixDisplay()
         {
-            lblTransformationMatrix.Text = robot.GetMatrixString();
+            lblTransformationMatrix.Text = robot.GetTransformationMatrixString();
         }
     }
 }
