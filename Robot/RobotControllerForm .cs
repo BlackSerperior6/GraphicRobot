@@ -33,25 +33,19 @@
         {
             graphics.Clear(Color.White);
 
-            // Calculate all arm positions using forward kinematics
             RobotArmPositions positions = robot.CalculateArmPositions();
 
-            // Draw wheels
             graphics.FillEllipse(Brushes.Black, robot.Position.X - 20, robot.Position.Y + 20, 40, 15);
             graphics.FillEllipse(Brushes.Black, robot.Position.X - 20, robot.Position.Y - 35, 40, 15);
 
-            // Draw robot body
             graphics.FillRectangle(Brushes.Gray, robot.Position.X - 30, robot.Position.Y - 30, 60, 60);
 
-            // Draw claw base
             graphics.FillRectangle(Brushes.DarkGray, positions.BasePosition.X - 10, positions.BasePosition.Y - 10, 20, 10);
 
-            // Draw arm segments with proper forward kinematics
             DrawArmSegment(graphics, positions.BasePosition, positions.Joint1Position, Brushes.SteelBlue, "J1");
             DrawArmSegment(graphics, positions.Joint1Position, positions.Joint2Position, Brushes.LightSteelBlue, "J2");
             DrawArmSegment(graphics, positions.Joint2Position, positions.Joint3Position, Brushes.Silver, "J3");
 
-            // Draw gripper at the end effector position
             DrawGripper(graphics, positions.EndEffectorPosition);
 
             pictureBox.Refresh();
@@ -61,23 +55,13 @@
 
         private void DrawArmSegment(Graphics g, PointF start, PointF end, Brush brush, string label)
         {
-            // Draw segment line
             using (Pen pen = new Pen(brush, 8))
-            {
                 g.DrawLine(pen, start, end);
-            }
 
-            // Draw joint circle at start
             g.FillEllipse(Brushes.Red, start.X - 5, start.Y - 5, 10, 10);
 
-            // Draw joint label
             g.DrawString(label, SystemFonts.DefaultFont, Brushes.Black, start.X + 8, start.Y - 15);
         }
-
-        private PointF CalculateJointPosition(PointF start, float angle, float length) => new(
-                start.X + length * (float)Math.Sin(angle * Math.PI / 180),
-                start.Y - length * (float)Math.Cos(angle * Math.PI / 180)
-            );
 
         private void UpdateJointTrackBars()
         {
@@ -120,16 +104,12 @@
 
         private void DrawGripper(Graphics g, PointF position)
         {
-            float gripperWidth = 20;
-
-            // Draw left gripper
             PointF leftStart = new PointF(position.X - 5, position.Y);
-            PointF leftEnd = new PointF(position.X - gripperWidth, position.Y + 15);
+            PointF leftEnd = new PointF(position.X - 20f, position.Y + 15);
             g.DrawLine(new Pen(Brushes.DarkGray, 4), leftStart, leftEnd);
 
-            // Draw right gripper
             PointF rightStart = new PointF(position.X + 5, position.Y);
-            PointF rightEnd = new PointF(position.X + gripperWidth, position.Y + 15);
+            PointF rightEnd = new PointF(position.X + 20f, position.Y + 15);
             g.DrawLine(new Pen(Brushes.DarkGray, 4), rightStart, rightEnd);
         }
 
@@ -168,9 +148,7 @@
             DrawRobot();
         }
 
-        private void UpdateTransformationMatrixDisplay()
-        {
-            lblTransformationMatrix.Text = robot.GetTransformationMatrixString();
-        }
+        private void UpdateTransformationMatrixDisplay() 
+            => lblTransformationMatrix.Text = robot.GetTransformationMatrixString();
     }
 }

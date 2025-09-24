@@ -15,6 +15,7 @@
         public const float Segment1Length = 30f;
         public const float Segment2Length = 25f;
         public const float Segment3Length = 20f;
+        public const float robotbaseToArm = 30f;
 
         public Robot() => Reset();
 
@@ -32,43 +33,33 @@
         // Расчет комплексной матрицы клешни относительно робота
         public float[,] GetEndEffectorTransformationMatrix()
         {
-            // Forward kinematics: cumulative transformations
-            // Each joint affects all subsequent segments
+            float[,] transform = IdentityMatrix();
 
-            // Base to Joint1 transformation
-            float[,] baseToJoint1 = MultiplyMatrices(
-                RotationMatrix(ClawJoint1),
-                TranslationMatrix(0, -Segment1Length)
-            );
+            float baseTx = Position.X - StartPosition.X;
+            float baseTy = Position.Y - StartPosition.Y;
+            transform = MultiplyMatrices(transform, TranslationMatrix(baseTx, baseTy));
 
-            // Joint1 to Joint2 transformation
-            float[,] joint1ToJoint2 = MultiplyMatrices(
-                RotationMatrix(ClawJoint2),
-                TranslationMatrix(0, -Segment2Length)
-            );
+            transform = MultiplyMatrices(transform, TranslationMatrix(0, -robotbaseToArm));
 
-            // Joint2 to Joint3 transformation
-            float[,] joint2ToJoint3 = MultiplyMatrices(
-                RotationMatrix(ClawJoint3),
-                TranslationMatrix(0, -Segment3Length)
-            );
+            transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint1));
+            transform = MultiplyMatrices(transform, TranslationMatrix(0, -Segment1Length));
 
-            // Combine all transformations: Base → Joint1 → Joint2 → Joint3 → EndEffector
-            float[,] transform = MultiplyMatrices(baseToJoint1, joint1ToJoint2);
-            transform = MultiplyMatrices(transform, joint2ToJoint3);
+            transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint2));
+            transform = MultiplyMatrices(transform, TranslationMatrix(0, -Segment2Length));
+
+            transform = MultiplyMatrices(transform, RotationMatrix(ClawJoint3));
+            transform = MultiplyMatrices(transform, TranslationMatrix(0, -Segment3Length));
 
             return transform;
         }
 
-        // Calculate positions of all joints for realistic drawing
+        // Рассчет позиции руки
         public RobotArmPositions CalculateArmPositions()
         {
             RobotArmPositions positions = new RobotArmPositions();
 
-            // Base position (where the arm starts on the robot)
-            positions.BasePosition = new PointF(Position.X, Position.Y - 30);
+            positions.BasePosition = new PointF(Position.X, Position.Y - robotbaseToArm);
 
-            // Joint1 position (relative to base)
             float angle1Rad = ClawJoint1 * (float)Math.PI / 180f;
             positions.Joint1Position = new PointF(
                 positions.BasePosition.X + Segment1Length * (float)Math.Sin(angle1Rad),
