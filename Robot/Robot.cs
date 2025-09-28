@@ -66,21 +66,18 @@
                 positions.BasePosition.Y - Segment1Length * (float)Math.Cos(angle1Rad)
             );
 
-            // Joint2 position (relative to joint1, cumulative angles)
             float angle2Rad = (ClawJoint1 + ClawJoint2) * (float)Math.PI / 180f;
             positions.Joint2Position = new PointF(
                 positions.Joint1Position.X + Segment2Length * (float)Math.Sin(angle2Rad),
                 positions.Joint1Position.Y - Segment2Length * (float)Math.Cos(angle2Rad)
             );
 
-            // Joint3 position (relative to joint2, cumulative angles)
             float angle3Rad = (ClawJoint1 + ClawJoint2 + ClawJoint3) * (float)Math.PI / 180f;
             positions.Joint3Position = new PointF(
                 positions.Joint2Position.X + Segment3Length * (float)Math.Sin(angle3Rad),
                 positions.Joint2Position.Y - Segment3Length * (float)Math.Cos(angle3Rad)
             );
 
-            // End effector position (same as joint3 for gripper base)
             positions.EndEffectorPosition = positions.Joint3Position;
 
             return positions;
