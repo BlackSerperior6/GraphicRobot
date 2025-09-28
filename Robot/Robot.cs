@@ -97,9 +97,9 @@
         {
             return new float[,]
             {
-                { 1f, 0f, tx },
-                { 0f, 1f, ty },
-                { 0f, 0f, 1f }
+                { 1f, 0f, 0 },
+                { 0f, 1f, 0 },
+                { tx, ty, 1f }
             };
         }
 
@@ -111,8 +111,8 @@
 
             return new float[,]
             {
-                { cos, -sin, 0f },
-                { sin,  cos, 0f },
+                { cos, sin, 0f },
+                { -sin,  cos, 0f },
                 { 0f,   0f,  1f }
             };
         }
