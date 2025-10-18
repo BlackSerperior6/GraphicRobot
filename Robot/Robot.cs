@@ -83,6 +83,29 @@
             return positions;
         }
 
+        /*PointF leftStart = new PointF(position.X - 5, position.Y);
+        PointF leftEnd = new PointF(position.X - 20f, position.Y + 15);
+        g.DrawLine(new Pen(Brushes.DarkGray, 4), leftStart, leftEnd);
+
+            PointF rightStart = new PointF(position.X + 5, position.Y);
+        PointF rightEnd = new PointF(position.X + 20f, position.Y + 15);
+        g.DrawLine(new Pen(Brushes.DarkGray, 4), rightStart, rightEnd);*/
+
+        public GripperPosition CalculatGripperPosition(PointF endEffectorposition)
+        {
+            GripperPosition position = new GripperPosition();
+
+            float angleRad = (ClawJoint1 + ClawJoint2 + ClawJoint3) * (float)Math.PI / 180f;
+
+            position.SourcePositionLeft = new PointF(endEffectorposition.X - 5, endEffectorposition.Y);
+            position.LeftGripperEnd = new PointF(endEffectorposition.X - 20f, endEffectorposition.Y + 15);
+
+            position.SourcePositionRight = new PointF(endEffectorposition.X + 5, endEffectorposition.Y);
+            position.RightGripperEnd = new PointF(endEffectorposition.X + 20f, endEffectorposition.Y + 15);
+
+            return position;
+        }
+
         private float[,] IdentityMatrix()
         {
             return new float[,]
@@ -159,9 +182,25 @@
     public class RobotArmPositions
     {
         public PointF BasePosition { get; set; }
+
         public PointF Joint1Position { get; set; }
+
         public PointF Joint2Position { get; set; }
+
         public PointF Joint3Position { get; set; }
+
         public PointF EndEffectorPosition { get; set; }
+    }
+
+    public class GripperPosition
+    {
+        public PointF SourcePositionLeft { get; set; }
+
+        public PointF SourcePositionRight { get; set; }
+
+        public PointF LeftGripperEnd { get; set; }
+
+        public PointF RightGripperEnd { get;set; }
+
     }
 }

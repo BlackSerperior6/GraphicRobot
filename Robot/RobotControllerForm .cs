@@ -46,7 +46,9 @@
             DrawArmSegment(graphics, positions.Joint1Position, positions.Joint2Position, Brushes.LightSteelBlue, "J2");
             DrawArmSegment(graphics, positions.Joint2Position, positions.Joint3Position, Brushes.Silver, "J3");
 
-            DrawGripper(graphics, positions.EndEffectorPosition);
+            GripperPosition gripperPositions = robot.CalculatGripperPosition(positions.EndEffectorPosition);
+
+            DrawGripper(graphics, gripperPositions);
 
             pictureBox.Refresh();
 
@@ -102,15 +104,10 @@
             lblJoint3.Text = $"Joint 3: {robot.ClawJoint3}°";
         }
 
-        private void DrawGripper(Graphics g, PointF position)
+        private void DrawGripper(Graphics g, GripperPosition positions)
         {
-            PointF leftStart = new PointF(position.X - 5, position.Y);
-            PointF leftEnd = new PointF(position.X - 20f, position.Y + 15);
-            g.DrawLine(new Pen(Brushes.DarkGray, 4), leftStart, leftEnd);
-
-            PointF rightStart = new PointF(position.X + 5, position.Y);
-            PointF rightEnd = new PointF(position.X + 20f, position.Y + 15);
-            g.DrawLine(new Pen(Brushes.DarkGray, 4), rightStart, rightEnd);
+            g.DrawLine(new Pen(Brushes.DarkGray, 4), positions.SourcePositionLeft, positions.LeftGripperEnd);
+            g.DrawLine(new Pen(Brushes.DarkGray, 4), positions.SourcePositionRight, positions.RightGripperEnd);
         }
 
         private void btnMoveLeft_Click(object sender, EventArgs e)
