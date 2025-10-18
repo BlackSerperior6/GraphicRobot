@@ -17,6 +17,9 @@
         public const float Segment3Length = 20f;
         public const float robotbaseToArm = 30f;
 
+        public const float GripperLength = 30f;
+        public const float GripperOpenAngle = 45f; // 45 degrees opening angle
+
         public Robot() => Reset();
 
         //Сброс робота до стартовой позиции
@@ -83,27 +86,33 @@
             return positions;
         }
 
-        /*PointF leftStart = new PointF(position.X - 5, position.Y);
-        PointF leftEnd = new PointF(position.X - 20f, position.Y + 15);
-        g.DrawLine(new Pen(Brushes.DarkGray, 4), leftStart, leftEnd);
-
-            PointF rightStart = new PointF(position.X + 5, position.Y);
-        PointF rightEnd = new PointF(position.X + 20f, position.Y + 15);
-        g.DrawLine(new Pen(Brushes.DarkGray, 4), rightStart, rightEnd);*/
-
-        public GripperPosition CalculatGripperPosition(PointF endEffectorposition)
+        public GripperPositions CalculateGrippersPosition(PointF gripperBase)
         {
-            GripperPosition position = new GripperPosition();
+            GripperPositions gripperPositions = new GripperPositions();
 
-            float angleRad = (ClawJoint1 + ClawJoint2 + ClawJoint3) * (float)Math.PI / 180f;
+            float totalAngleRad = (ClawJoint1 + ClawJoint2 + ClawJoint3) * (float)Math.PI / 180f;
 
-            position.SourcePositionLeft = new PointF(endEffectorposition.X - 5, endEffectorposition.Y);
-            position.LeftGripperEnd = new PointF(endEffectorposition.X - 20f, endEffectorposition.Y + 15);
+            float leftGripperAngleRad = totalAngleRad - GripperOpenAngle * (float)Math.PI / 180f;
 
-            position.SourcePositionRight = new PointF(endEffectorposition.X + 5, endEffectorposition.Y);
-            position.RightGripperEnd = new PointF(endEffectorposition.X + 20f, endEffectorposition.Y + 15);
+            gripperPositions.LeftGripperStart = gripperBase;
 
-            return position;
+            gripperPositions.LeftGripperEnd = new PointF(
+                gripperBase.X + GripperLength * (float)Math.Sin(leftGripperAngleRad),
+                gripperBase.Y - GripperLength * (float)Math.Cos(leftGripperAngleRad)
+            );
+
+            float rightGripperAngleRad = totalAngleRad + GripperOpenAngle * (float)Math.PI / 180f;
+
+            gripperPositions.RightGripperStart = gripperBase;
+
+            gripperPositions.RightGripperEnd = new PointF(
+                gripperBase.X + GripperLength * (float)Math.Sin(rightGripperAngleRad),
+                gripperBase.Y - GripperLength * (float)Math.Cos(rightGripperAngleRad)
+            );
+
+            gripperPositions.GripperBase = gripperBase;
+
+            return gripperPositions;
         }
 
         private float[,] IdentityMatrix()
@@ -192,15 +201,12 @@
         public PointF EndEffectorPosition { get; set; }
     }
 
-    public class GripperPosition
+    public class GripperPositions
     {
-        public PointF SourcePositionLeft { get; set; }
-
-        public PointF SourcePositionRight { get; set; }
-
+        public PointF GripperBase { get; set; }
+        public PointF LeftGripperStart { get; set; }
         public PointF LeftGripperEnd { get; set; }
-
-        public PointF RightGripperEnd { get;set; }
-
+        public PointF RightGripperStart { get; set; }
+        public PointF RightGripperEnd { get; set; }
     }
 }
